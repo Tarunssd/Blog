@@ -65,6 +65,19 @@ func handleFetchBlogs(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("Content: ", value.Content)
 		fmt.Println("Is Saved: ", value.Saved)
 	}
+	blogs, ok := result[userId]
+	if !ok {
+		http.Error(writer, "No blogs found for user", http.StatusNotFound)
+		return
+	}
+	jsonResponse, err := json.Marshal(blogs)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	writer.Write(jsonResponse)
 }
 
 func handleCreateBlog(writer http.ResponseWriter, request *http.Request) {
